@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 5s # High-frequency telemetry scraping for secure military-grade escrow transactions
+  evaluation_interval: 5s
+
+# Alertmanager configuration (receives active fires)
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - "alertmanager:9093"
+
+# Load local alert validation rules
+rule_files:
+  - "alerts.rules.yml"
+
+scrape_configs:
+  - job_name: "aether_omni_nfc_service"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets:
+          - "aether-node.brisbane.internal:8080" # Primary Brisbane Node TEE listener
+          - "localhost:8080"                     # Local development loopback

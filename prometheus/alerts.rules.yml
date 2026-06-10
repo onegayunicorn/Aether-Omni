@@ -1,0 +1,41 @@
+groups:
+  - name: aether_omni_nfc_alerts
+    rules:
+      - alert: NFCReaderDisconnected
+        expr: aether_reader_connected == 0
+        for: 10s
+        labels:
+          severity: critical
+          facility: brisbane-hub
+        annotations:
+          summary: "Fiduciary NFC Reader Offline"
+          description: "Brisbane Node TEE has lost connection with ISO-14443 physical contactless pad. Escrow triggers temporarily suspended."
+
+      - alert: HighEscrowValidationErrors
+        expr: (rate(aether_escrow_validations_errors_total[1m]) / rate(aether_escrow_validations_total[1m])) * 100 > 15
+        for: 30s
+        labels:
+          severity: critical
+          facility: brisbane-hub
+        annotations:
+          summary: "Abnormal Escrow Handshake Rejections"
+          description: "NFC scan error rate is {{ $value | printf \"%.2f\" }}% (threshold > 15%). Counterfeit security applets or network tampering suspected."
+
+      - alert: CriticalAPILatency
+        expr: rate(aether_api_latency_seconds_sum[1m]) / rate(aether_api_latency_seconds_count[1m]) > 0.350
+        for: 45s
+        labels:
+          severity: warning
+          facility: cloud-gateway
+        annotations:
+          summary: "Edge Server Handshake Lag"
+          description: "Aether-Omni Sydney central API roundtrip is averaging {{ $value }}s (threshold > 350ms). Automatically switching transactions to secure TEE local backup rules."
+
+      - alert: SecureCryptoprocessorOverload
+        expr: aether_cpu_utilization_percent > 85
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Knox TEE Cryptographic Bottleneck"
+          description: "Brisbane node crypto resource utilization is at {{ $value }}%. Queue is backing up."

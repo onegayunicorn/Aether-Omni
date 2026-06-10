@@ -1,0 +1,6 @@
+{
+  "name": "Aether-Omni",
+  "description": "Enterprise-grade closed-loop NFC escrow validation client. Compliant with Queensland Privacy Act 2009.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
